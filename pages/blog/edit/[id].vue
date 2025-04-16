@@ -79,23 +79,25 @@
         <label class="form-check-label" for="publishedCheck"> Published </label>
       </div>
 
-      <!-- <img
-        :src="blog.image"
-        alt="Preview"
-        class="img-thumbnail"
-        style="max-width: 200px"
-      /> -->
+      <div v-if="blog.image" class="mt-2">
+        <img
+          :src="`/uploads/${blog.image}`"
+          alt="Preview"
+          class="img-thumbnail"
+          style="max-width: 200px"
+        />
+      </div>
 
       <!-- Blog Main Image Upload -->
-      <!-- <div class="mb-3">
-        <label class="form-label">Upload Image</label>
+      <div class="mb-3">
+        <label class="form-label">Upload New Image</label>
         <input
           type="file"
           @change="onImageSelected"
           class="form-control"
           accept="image/*"
         />
-      </div> -->
+      </div>
 
       <!-- Submit -->
       <button class="btn btn-success" type="submit">Update Blog</button>
@@ -160,15 +162,19 @@ export default {
 
       const formData = new FormData();
       formData.append("image", file);
+      formData.append("blogId", this.blog.id); // 👈 important
 
       try {
-        const response = await axios.post("/api/upload", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        // Assume the response gives you the uploaded image URL
+        const response = await axios.post(
+          `/api/blogs/${this.blog.id}/upload-image`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        // Set the image URL from the upload response
         this.blog.image = response.data.url;
       } catch (error) {
         console.error("Image upload failed:", error);

@@ -17,6 +17,7 @@
     "body-parser": "^2.2.0",
     "bootstrap": "^5.3.3",
     "ckeditor": "^4.12.1",
+    "formidable": "^3.5.2",
     "next-auth": "~4.21.1",
     "nuxt": "^3.15.4",
     "pg": "^8.14.1",
@@ -24,6 +25,7 @@
     "quill": "^2.0.3",
     "vue": "^3.5.13",
     "vue-router": "latest",
+    "vue3-quill": "^0.3.1",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
