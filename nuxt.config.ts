@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
+  ssr:false,
   css:[
     "~/assets/scss/app.scss",
     "~/assets/scss/responsive.scss",
@@ -45,5 +46,9 @@ export default defineNuxtConfig({
     "~/assets/css/vendors/themify.css",
     "~/assets/css/vendors/vector-map.css",
     "~/assets/css/vendors/sweetalert2.css"
-  ]
+  ],
+  
+  runtimeConfig: {
+    databaseUrl: process.env.NUXT_DATABASE_URL,
+  },
 })
