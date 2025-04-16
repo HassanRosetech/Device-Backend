@@ -42,8 +42,90 @@
 const userName = "Admin";
 
 function logout() {
-  alert("Logging out..."); // Replace this with actual logout logic
+  //alert("Logging out..."); // Replace this with actual logout logic
   // Example: useAuth().logout()
+  //window.location.href = "http://logout:logout@" + window.location.hostname;
+  // Optional: clear local/session storage & cookies
+}
+
+function clearRecentLocalStorage() {
+  const ONE_HOUR = 60 * 60 * 1000; // Time in milliseconds
+  const now = Date.now();
+
+  // Loop through all localStorage items
+  for (let key in localStorage) {
+    try {
+      const item = JSON.parse(localStorage.getItem(key));
+
+      // Check if the item has a timestamp and is within the last hour
+      if (item && item.timestamp && now - item.timestamp < ONE_HOUR) {
+        // Check for items related to "username" or "password"
+        if (key.includes("Username") || key.includes("Password")) {
+          console.log(userName);
+          localStorage.removeItem(key); // Remove the item
+        }
+      }
+    } catch (e) {
+      // If it’s not JSON-parsable, skip or remove it anyway
+      if (key.includes("Username") || key.includes("Password")) {
+        localStorage.removeItem(key); // Remove non-JSON values if they match
+      }
+    }
+  }
+}
+
+function clearRecentSessionStorage() {
+  const ONE_HOUR = 60 * 60 * 1000; // Time in milliseconds
+  const now = Date.now();
+
+  // Loop through all sessionStorage items
+  for (let key in sessionStorage) {
+    try {
+      const item = JSON.parse(sessionStorage.getItem(key));
+
+      // Check if the item has a timestamp and is within the last hour
+      if (item && item.timestamp && now - item.timestamp < ONE_HOUR) {
+        // Check for items related to "username" or "password"
+        if (key.includes("Username") || key.includes("Password")) {
+          sessionStorage.removeItem(key); // Remove the item
+        }
+      }
+    } catch (e) {
+      // If it’s not JSON-parsable, skip or remove it anyway
+      if (key.includes("Username") || key.includes("Password")) {
+        sessionStorage.removeItem(key); // Remove non-JSON values if they match
+      }
+    }
+  }
+}
+
+function clearRecentCookies() {
+  const ONE_HOUR = 60 * 60 * 1000; // Time in milliseconds
+  const now = Date.now();
+
+  // Loop through all cookies
+  document.cookie.split(";").forEach((cookie) => {
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    const value = cookie.substr(eqPos + 1);
+
+    // Try to parse the cookie to get its timestamp (if any)
+    try {
+      const parsedValue = JSON.parse(value);
+
+      if (parsedValue.timestamp && now - parsedValue.timestamp < ONE_HOUR) {
+        // Check if it's a username or password-related cookie
+        if (name.includes("Username") || name.includes("Password")) {
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`; // Clear the cookie
+        }
+      }
+    } catch (e) {
+      // If not JSON, skip or remove it anyway
+      if (name.includes("Username") || name.includes("Password")) {
+        document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`; // Remove the cookie
+      }
+    }
+  });
 }
 </script>
 

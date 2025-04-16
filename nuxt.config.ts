@@ -51,4 +51,21 @@ export default defineNuxtConfig({
   runtimeConfig: {
     databaseUrl: process.env.NUXT_DATABASE_URL,
   },
+
+  modules: ["@kgierke/nuxt-basic-auth"],
+
+  basicAuth: {
+    enabled: true,
+    users: [
+      {
+        username: "admin",
+        password: "admin",
+      },
+      {
+        username: "Hassan",
+        password: "Hassan",
+      }
+    ],
+    
+  },
 })
