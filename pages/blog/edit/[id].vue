@@ -79,25 +79,7 @@
         <label class="form-check-label" for="publishedCheck"> Published </label>
       </div>
 
-      <div v-if="blog.image" class="mt-2">
-        <img
-          :src="`/uploads/${blog.image}`"
-          alt="Preview"
-          class="img-thumbnail"
-          style="max-width: 200px"
-        />
-      </div>
-
       <!-- Blog Main Image Upload -->
-      <div class="mb-3">
-        <label class="form-label">Upload New Image</label>
-        <input
-          type="file"
-          @change="onImageSelected"
-          class="form-control"
-          accept="image/*"
-        />
-      </div>
 
       <!-- Submit -->
       <button class="btn btn-success" type="submit">Update Blog</button>
