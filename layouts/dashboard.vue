@@ -1,21 +1,25 @@
 <template>
-  <div class="dashboard-layout d-flex flex-column">
+  <div class="dashboard-layout d-flex flex-column min-vh-100">
     <!-- Top Navbar -->
-    <nav
-      class="topbar bg-dark d-flex justify-content-between align-items-center px-4 py-2 shadow-sm"
-    >
-      <!-- Centered Welcome -->
-      <div class="welcome-text mx-auto fw-bold text-center">
-        👋 Welcome, {{ userName }}
+    <nav class="topbar navbar navbar-dark bg-dark px-3 py-2 shadow-sm">
+      <div
+        class="container-fluid d-flex justify-content-between align-items-center flex-wrap"
+      >
+        <div
+          class="welcome-text fw-bold text-white text-md-center mx-md-auto mb-2 mb-md-0"
+        >
+          👋 Welcome, {{ userName }}
+        </div>
+        <button class="btn btn-outline-danger btn-sm" @click="logout">
+          <i class="fas fa-sign-out-alt me-1"></i> Logout
+        </button>
       </div>
-      <button class="btn btn-outline-danger btn-sm" @click="logout">
-        <i class="fas fa-sign-out-alt me-1"></i> Logout
-      </button>
     </nav>
 
-    <div class="d-flex flex-grow-1">
+    <!-- Sidebar + Content -->
+    <div class="dashboard-body d-flex flex-grow-1 flex-column flex-md-row">
       <!-- Sidebar -->
-      <aside class="sidebar bg-dark text-white p-3">
+      <aside class="sidebar bg-dark text-white p-3 w-lg-25 w-md-25">
         <h5 class="mb-4">My Dashboard</h5>
         <ul class="nav flex-column">
           <li class="nav-item">
@@ -30,7 +34,7 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="content p-4 w-100">
+      <main class="content p-4 flex-grow-1">
         <slot />
       </main>
     </div>
@@ -132,15 +136,32 @@ function clearRecentCookies() {
 <style scoped>
 .dashboard-layout {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.topbar {
-  height: 60px;
+.dashboard-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .dashboard-body {
+    flex-direction: row;
+  }
 }
 
 .sidebar {
-  width: 250px;
-  min-height: calc(100vh - 60px);
+  width: 100%;
+  min-height: auto;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    width: 250px;
+    min-height: calc(100vh - 60px);
+  }
 }
 
 .nav-link {
@@ -153,5 +174,10 @@ function clearRecentCookies() {
 .nav-link.router-link-active {
   background-color: rgba(255, 255, 255, 0.2);
   color: #fff;
+}
+
+.welcome-text {
+  font-size: 1rem;
+  white-space: nowrap;
 }
 </style>
