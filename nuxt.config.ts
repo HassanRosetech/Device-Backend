@@ -59,7 +59,7 @@ export default defineNuxtConfig({
     users: [
       {
         username: "admin",
-        password: "admin",
+        password: "admin@partsshop",
       },
       {
         username: "Hassan",
