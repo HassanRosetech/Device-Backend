@@ -42,7 +42,7 @@
 const userName = "Admin";
 
 function logout() {
-  //alert("Logging out..."); // Replace this with actual logout logic
+  alert("Logging out..."); // Replace this with actual logout logic
   // Example: useAuth().logout()
   //window.location.href = "http://logout:logout@" + window.location.hostname;
   // Optional: clear local/session storage & cookies
