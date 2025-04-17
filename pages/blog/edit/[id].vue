@@ -16,13 +16,6 @@
       </div>
 
       <!-- Content -->
-      <!-- <div class="mb-3">
-        <label class="form-label">Content</label>
-
-        <textarea v-model="blog.content" class="form-control" rows="6" />
-      </div> -->
-
-      <!-- Content -->
       <div class="mb-3">
         <label class="form-label">Content</label>
         <div ref="editorContainer" class="quill-editor" />
@@ -34,10 +27,10 @@
         <input v-model="blog.author_name" class="form-control" />
       </div>
 
-      <!-- Image URL -->
+      <!-- Image URL Preview -->
       <div class="mb-3">
-        <label class="form-label">Image</label>
-        <!-- <input v-model="blog.image" class="form-control" /> -->
+        <label class="form-label">Blog Image</label>
+        <input type="file" @change="onImageSelected" class="form-control" />
         <div v-if="blog.image" class="mt-2">
           <img
             :src="blog.image"
@@ -78,8 +71,6 @@
         />
         <label class="form-check-label" for="publishedCheck"> Published </label>
       </div>
-
-      <!-- Blog Main Image Upload -->
 
       <!-- Submit -->
       <button class="btn btn-success" type="submit">Update Blog</button>
@@ -144,7 +135,7 @@ export default {
 
       const formData = new FormData();
       formData.append("image", file);
-      formData.append("blogId", this.blog.id); // 👈 important
+      formData.append("blogId", this.blog.id);
 
       try {
         const response = await axios.post(
@@ -186,6 +177,7 @@ definePageMeta({
   layout: "dashboard",
 });
 </script>
+
 <style scoped>
 .quill-editor {
   min-height: 250px;
