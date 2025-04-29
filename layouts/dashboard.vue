@@ -35,6 +35,11 @@
               >Newsletter Subscribers</NuxtLink
             >
           </li>
+          <li class="nav-item">
+            <NuxtLink to="/contacts" class="nav-link text-white"
+              >Contacts</NuxtLink
+            >
+          </li>
         </ul>
       </aside>
 
