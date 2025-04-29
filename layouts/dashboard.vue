@@ -30,6 +30,11 @@
               >Create New Blog</NuxtLink
             >
           </li>
+          <li class="nav-item">
+            <NuxtLink to="/newsletter" class="nav-link text-white"
+              >Newsletter Subscribers</NuxtLink
+            >
+          </li>
         </ul>
       </aside>
 
