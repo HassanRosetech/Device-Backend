@@ -8,35 +8,79 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
 
     const {
-      child_id ,
-      mrp  ,
-      price , 
-      title ,
-      ratingstars ,
-      image 
+      name,
+      description,
+      category,
+      manufacturer,
+      total_purchases,
+      available,
+      first_available_date,
+      in_stock,
+      total_reviews,
+      brand,
+      type,
+      feature,
+      mrp,
+      price,
+      rating_stars,
+      is_new,
+      discount,
+      department,
     } = body
 
     const result = await db`
-      INSERT INTO child_banners   (
-       child_id  , mrp  ,price ,title ,ratingstars ,image 
-      )
-      VALUES (
-        ${child_id }, ${mrp }, ${price },${title }, ${ratingstars } , ${image }
-
+      INSERT INTO products (
+        name,
+        description,
+        category,
+        manufacturer,
+        total_purchases,
+        available,
+        first_available_date,
+        in_stock,
+        total_reviews,
+        brand,
+        type,
+        feature,
+        mrp,
+        price,
+        rating_stars,
+        is_new,
+        discount,
+        department
+      ) VALUES (
+        ${name},
+        ${description},
+        ${category},
+        ${manufacturer},
+        ${total_purchases},
+        ${available},
+        ${first_available_date},
+        ${in_stock},
+        ${total_reviews},
+        ${brand},
+        ${type},
+        ${feature},
+        ${mrp},
+        ${price},
+        ${rating_stars},
+        ${is_new},
+        ${discount},
+        ${department}
       )
       RETURNING *;
     `
 
     return {
-      message: 'TabChildren created successfully',
-      blog: result[0]
+      success: true,
+      data: result[0],
     }
+  } catch (error: any) {
+    console.error('🔥 Database insert failed:', error)
 
-  } catch (error) {
-    console.error('🔥 TabChildren creation error:', error)
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to create blog: ' + error.message
+      statusMessage: 'Database insert error: ' + error.message,
     })
   }
 })

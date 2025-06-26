@@ -5,27 +5,27 @@ export default defineCachedEventHandler(
     const { databaseUrl } = useRuntimeConfig()
     const db = neon(databaseUrl)
 
-    const id = getRouterParam(event, 'id') // Grabs `id` from the URL (e.g., /api/tabs/123)
+    const id = getRouterParam(event, 'id') // Grabs `id` from the URL (e.g., /api/product/123)
 
     if (!id || isNaN(Number(id))) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Invalid banner ID',
+        statusMessage: 'Invalid product ID',
       })
     }
 
     try {
-      const result = await db`SELECT * FROM child_banners  WHERE id = ${Number(id)}`
+      const result = await db`SELECT * FROM products WHERE id = ${Number(id)}`
 
       if (result.length === 0) {
         throw createError({
           statusCode: 404,
-          statusMessage: 'Banner not found',
+          statusMessage: 'Product not found',
         })
       }
 
       return result[0]
-    } catch (error) {
+    } catch (error: any) {
       console.error('🔥 Database query failed:', error)
       throw createError({
         statusCode: 500,
@@ -34,6 +34,6 @@ export default defineCachedEventHandler(
     }
   },
   {
-    maxAge: 1 * 1 * 1, // 1 day in seconds
+    maxAge: 1 * 1 * 1, // Cache for 1 day
   }
 )
