@@ -77,7 +77,6 @@
     </form>
   </div>
 </template>
-
 <script>
 import axios from "axios";
 import Quill from "quill";
@@ -87,6 +86,7 @@ export default {
   data() {
     return {
       blog: {},
+      selectedFile: null,
       error: null,
       quillEditor: null,
     };
@@ -98,7 +98,6 @@ export default {
       const response = await axios.get(`/api/blogs/${id}`);
       this.blog = response.data;
 
-      // Initialize Quill after data loads
       this.$nextTick(() => {
         const container = this.$refs.editorContainer;
         if (container) {
@@ -129,40 +128,42 @@ export default {
     }
   },
   methods: {
-    async onImageSelected(event) {
+    onImageSelected(event) {
       const file = event.target.files[0];
       if (!file) return;
+      this.selectedFile = file;
 
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("blogId", this.blog.id);
-
-      try {
-        const response = await axios.post(
-          `/api/blogs/${this.blog.id}/upload-image`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-        // Set the image URL from the upload response
-        this.blog.image = response.data.url;
-      } catch (error) {
-        console.error("Image upload failed:", error);
-        alert("Failed to upload image.");
-      }
+      // Optional preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.blog.image = reader.result;
+      };
+      reader.readAsDataURL(file);
     },
 
     async updateBlog() {
       try {
-        // Ensure content is up-to-date before sending
         if (this.quillEditor) {
           this.blog.content = this.quillEditor.root.innerHTML;
         }
 
+        // Upload image if file selected
+        if (this.selectedFile) {
+          const formData = new FormData();
+          formData.append("file", this.selectedFile);
+
+          const uploadRes = await axios.post("/api/upload", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          this.blog.image = uploadRes.data.url;
+        }
+
+        // Update blog entry
         await axios.put(`/api/blogs/${this.blog.id}`, this.blog);
+
         alert("✅ Blog updated successfully!");
         this.$router.push("/blogs");
       } catch (error) {

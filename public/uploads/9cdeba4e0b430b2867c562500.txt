@@ -1,1 +1,0 @@
-https://neon.tech/docs/guides/nuxt

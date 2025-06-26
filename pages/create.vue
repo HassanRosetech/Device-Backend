@@ -128,10 +128,47 @@ onMounted(async () => {
   }
 });
 
+const selectedFile = ref(null);
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedFile.value = file;
+
+  // Optional preview:
+  const reader = new FileReader();
+  reader.onload = () => {
+    form.value.image = reader.result;
+  };
+  reader.readAsDataURL(file);
+};
+
 const submitForm = async () => {
   try {
+    let imageUrl = form.value.image;
+
+    // Step 1: Upload image file if selected
+    if (selectedFile.value) {
+      const formData = new FormData();
+      formData.append("file", selectedFile.value);
+
+      const uploadRes = await $fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+        headers: {
+          // Required for multipart uploads in fetch
+          // Nuxt's $fetch auto-sets headers unless you disable it:
+          // so you don't need to set Content-Type manually
+        },
+      });
+
+      imageUrl = uploadRes.url; // Adjust this based on your backend response format
+    }
+
+    // Step 2: Create blog with uploaded image URL
     const body = {
       ...form.value,
+      image: imageUrl,
       published_at: new Date().toISOString(),
     };
 
@@ -144,19 +181,8 @@ const submitForm = async () => {
     router.push("/blogs");
   } catch (err) {
     console.error("❌ Failed to create blog:", err);
-    alert("Failed to create blog. Check console for details.");
+    alert("Failed to create blog. See console for details.");
   }
-};
-
-const handleImageUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    form.value.image = reader.result; // base64 encoded string
-  };
-  reader.readAsDataURL(file);
 };
 
 definePageMeta({

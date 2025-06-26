@@ -40,6 +40,44 @@
               >Contacts</NuxtLink
             >
           </li>
+          <li class="nav-item">
+            <a
+              href="#"
+              class="nav-link text-white d-flex justify-content-between align-items-center"
+              @click.prevent="toggleVeckansDeal"
+            >
+              Veckans Deal
+              <i
+                :class="
+                  isVeckansDealOpen
+                    ? 'fas fa-chevron-up'
+                    : 'fas fa-chevron-down'
+                "
+              ></i>
+            </a>
+            <ul v-if="isVeckansDealOpen" class="ms-3">
+              <li class="koko">
+                <NuxtLink to="/tabs/HurryUp" class="nav-link text-white"
+                  >Tabs</NuxtLink
+                >
+              </li>
+              <li class="koko">
+                <NuxtLink to="/tabchildren/" class="nav-link text-white"
+                  >Tab's Children</NuxtLink
+                >
+              </li>
+              <li class="koko">
+                <NuxtLink to="/banners/" class="nav-link text-white"
+                  >Child's Banners</NuxtLink
+                >
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <NuxtLink to="/products/products" class="nav-link text-white"
+              >Products</NuxtLink
+            >
+          </li>
         </ul>
       </aside>
 
@@ -52,6 +90,13 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+
+const isVeckansDealOpen = ref(false);
+
+function toggleVeckansDeal() {
+  isVeckansDealOpen.value = !isVeckansDealOpen.value;
+}
 // Simulating user session – in real case, use auth composables or Vuex/Pinia
 const userName = "Admin";
 
@@ -189,5 +234,13 @@ function clearRecentCookies() {
 .welcome-text {
   font-size: 1rem;
   white-space: nowrap;
+}
+
+ul.ms-3 {
+  margin-top: 0.5rem;
+}
+.koko {
+  width: 175px;
+  margin-left: -30px;
 }
 </style>
