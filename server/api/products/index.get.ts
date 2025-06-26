@@ -41,6 +41,6 @@ export default defineCachedEventHandler(
     }
   },
   {
-    maxAge: 1 * 1 * 1, // Cache for 1 day
+     maxAge: 60 * 60 * 24, // 1 day in seconds
   }
 )
