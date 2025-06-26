@@ -12,6 +12,29 @@ function goToCreate() {
   router.push("/products/create"); // Update with your create product route
 }
 
+function goToEdit(id) {
+  router.push(`/products/edit/${id}`);
+}
+
+async function confirmDelete(id) {
+  const confirm = window.confirm(
+    "Are you sure you want to delete this product?"
+  );
+  if (!confirm) return;
+
+  try {
+    await $fetch(`/api/products/${id}`, {
+      method: "DELETE",
+    });
+
+    // Remove from local state
+    products.value = products.value.filter((p) => p.id !== id);
+  } catch (err) {
+    console.error("Failed to delete product:", err);
+    alert("Error deleting product. See console for details.");
+  }
+}
+
 onMounted(async () => {
   try {
     const res = await $fetch("/api/products");
@@ -70,6 +93,8 @@ definePageMeta({
             <th class="sticky-header">Is New</th>
             <th class="sticky-header">Discount (%)</th>
             <th class="sticky-header">Department</th>
+            <th class="sticky-header">Edit</th>
+            <th class="sticky-header">Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -103,6 +128,20 @@ definePageMeta({
             <td>{{ p.is_new ? "Yes" : "No" }}</td>
             <td>{{ p.discount }}%</td>
             <td>{{ p.department }}</td>
+            <td>
+              <button class="icon-btn" @click="goToEdit(p.id)" title="Edit">
+                ✏️
+              </button>
+            </td>
+            <td>
+              <button
+                class="icon-btn delete"
+                @click="confirmDelete(p.id)"
+                title="Delete"
+              >
+                🗑️
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -253,5 +292,40 @@ definePageMeta({
   font-weight: bold;
   border-color: #4caf50;
   cursor: default;
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #000;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.edit-btn:hover {
+  background-color: #e0a800;
+}
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.icon-btn:hover {
+  transform: scale(1.2);
+}
+.icon-btn.delete {
+  color: red;
+}
+
+.icon-btn.delete:hover {
+  transform: scale(1.2);
+  color: darkred;
 }
 </style>

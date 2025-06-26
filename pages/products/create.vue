@@ -1,119 +1,290 @@
 <template>
   <div class="container py-4">
-    <div class="products-list">
-      <h1>Products List</h1>
+    <div class="product-form">
+      <h1>Create New Product</h1>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Child Tab</th>
-            <th>MRP</th>
-            <th>Price</th>
-            <th>Rating</th>
-            <th>Image</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="product in products" :key="product.id">
-            <td>{{ product.title }}</td>
-            <td>{{ getChildTabName(product.child_id) }}</td>
-            <td>{{ product.mrp.toFixed(2) }}</td>
-            <td>{{ product.price.toFixed(2) }}</td>
-            <td>{{ product.ratingstars }}/5</td>
-            <td>
-              <img
-                v-if="product.image"
-                :src="product.image"
-                alt="Product image"
-                class="product-image"
-              />
-              <span v-else>—</span>
-            </td>
-          </tr>
-          <tr v-if="products.length === 0">
-            <td colspan="6" class="no-data">No products found.</td>
-          </tr>
-        </tbody>
-      </table>
+      <form @submit.prevent="submitForm">
+        <div>
+          <label>Name</label>
+          <input v-model="form.name" type="text" required />
+        </div>
+
+        <div>
+          <label>Description</label>
+          <div ref="editorContainer" class="quill-editor"></div>
+        </div>
+
+        <div>
+          <label>Category</label>
+          <input v-model="form.category" type="text" />
+        </div>
+
+        <div>
+          <label>Manufacturer</label>
+          <input v-model="form.manufacturer" type="text" />
+        </div>
+
+        <div>
+          <label>Total Purchases</label>
+          <input v-model.number="form.total_purchases" type="number" />
+        </div>
+
+        <div>
+          <label>Available</label>
+          <input type="checkbox" v-model="form.available" />
+        </div>
+
+        <div>
+          <label>First Available Date</label>
+          <input v-model="form.first_available_date" type="date" />
+        </div>
+
+        <div>
+          <label>In Stock</label>
+          <input v-model.number="form.in_stock" type="number" />
+        </div>
+
+        <div>
+          <label>Total Reviews</label>
+          <input v-model.number="form.total_reviews" type="number" />
+        </div>
+
+        <div>
+          <label>Brand</label>
+          <input v-model="form.brand" type="text" />
+        </div>
+
+        <div>
+          <label>Type</label>
+          <input v-model="form.type" type="text" />
+        </div>
+
+        <div>
+          <label>Feature</label>
+          <input v-model="form.feature" type="text" />
+        </div>
+
+        <div>
+          <label>MRP</label>
+          <input v-model.number="form.mrp" type="number" step="0.01" />
+        </div>
+
+        <div>
+          <label>Price</label>
+          <input
+            v-model.number="form.price"
+            type="number"
+            step="0.01"
+            required
+          />
+        </div>
+
+        <div>
+          <label>Rating Stars</label>
+          <input
+            v-model.number="form.rating_stars"
+            type="number"
+            min="0"
+            max="5"
+          />
+        </div>
+
+        <div>
+          <label>Is New</label>
+          <input type="checkbox" v-model="form.is_new" />
+        </div>
+
+        <div>
+          <label>Discount (%)</label>
+          <input v-model.number="form.discount" type="number" />
+        </div>
+
+        <div>
+          <label>Department</label>
+          <input v-model="form.department" type="text" />
+        </div>
+
+        <!-- <div>
+          <label>Product Image</label>
+          <input type="file" accept="image/*" @change="handleImageUpload" />
+          <div v-if="form.image" class="mt-2">
+            <img
+              :src="form.image"
+              alt="Preview"
+              class="img-thumbnail"
+              style="max-width: 200px"
+            />
+          </div>
+        </div> -->
+
+        <button type="submit">Create Product</button>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
+import { useRouter } from "vue-router";
+import Quill from "quill";
+import "quill/dist/quill.snow.css";
 
-const products = ref([]);
-const tabChildren = ref([]);
+const router = useRouter();
 
-// Load child tabs and products from API on mount
+const form = ref({
+  name: "",
+  description: "",
+  category: "",
+  manufacturer: "",
+  total_purchases: 0,
+  available: true,
+  first_available_date: "",
+  in_stock: 0,
+  total_reviews: 0,
+  brand: "",
+  type: "",
+  feature: "",
+  mrp: null,
+  price: null,
+  rating_stars: 0,
+  is_new: false,
+  discount: 0,
+  department: "",
+  //image: "",
+});
+
+const editorContainer = ref(null);
+let quillEditor = null;
+
 onMounted(async () => {
-  try {
-    //tabChildren.value = await $fetch("/api/tabchildren");
-    products.value = await $fetch("/api/products");
-  } catch (err) {
-    console.error("❌ Failed to load data:", err);
-    alert("Failed to load products or tabs. Please try again.");
+  await nextTick();
+  if (editorContainer.value) {
+    quillEditor = new Quill(editorContainer.value, {
+      theme: "snow",
+      placeholder: "Write product description...",
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ["bold", "italic", "underline"],
+          ["link", "image"],
+          [{ list: "ordered" }, { list: "bullet" }],
+          ["clean"],
+        ],
+      },
+    });
+
+    quillEditor.on("text-change", () => {
+      form.value.description = quillEditor.root.innerHTML;
+    });
   }
 });
 
-// Helper to get child tab name from ID
-const getChildTabName = (childId) => {
-  const child = tabChildren.value.find((c) => c.id === childId);
-  return child ? `${child.childtype} (${child.tab_name})` : "Unknown";
+const selectedFile = ref(null);
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedFile.value = file;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    form.value.image = reader.result;
+  };
+  reader.readAsDataURL(file);
 };
+
+const submitForm = async () => {
+  try {
+    let imageUrl = form.value.image;
+
+    if (selectedFile.value) {
+      const formData = new FormData();
+      formData.append("file", selectedFile.value);
+      const uploadRes = await $fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      imageUrl = uploadRes.url;
+    }
+
+    const body = {
+      ...form.value,
+      image: imageUrl,
+    };
+
+    const response = await $fetch("/api/products", {
+      method: "POST",
+      body,
+    });
+
+    console.log("✅ Product created:", response);
+    router.push("/products/products");
+  } catch (err) {
+    console.error("❌ Failed to create product:", err);
+    alert("Failed to create product. See console for details.");
+  }
+};
+
+definePageMeta({
+  layout: "dashboard",
+});
 </script>
 
 <style scoped>
-.products-list {
-  max-width: 900px;
+.product-form {
+  max-width: 800px;
   margin: auto;
-  background: #fff;
-  padding: 2rem;
+  background-color: #ffffff;
+  padding: 2.5rem;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   border: 1px solid #eaeaea;
 }
-
-.products-list h1 {
+.product-form h1 {
   font-size: 1.8rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
   color: #333;
 }
-
-table {
+.product-form form > div {
+  margin-bottom: 1.25rem;
+}
+.product-form label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #444;
+}
+.product-form input[type="text"],
+.product-form input[type="number"],
+.product-form input[type="date"],
+.product-form textarea {
   width: 100%;
-  border-collapse: collapse;
-}
-
-thead th {
-  text-align: left;
-  padding: 0.75rem;
-  background-color: #f7f7f7;
-  border-bottom: 2px solid #ddd;
-  font-weight: 600;
-  color: #555;
-}
-
-tbody td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #eee;
-  vertical-align: middle;
-}
-
-.product-image {
-  max-width: 60px;
-  max-height: 60px;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  object-fit: cover;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
-
-.no-data {
-  text-align: center;
-  color: #777;
-  font-style: italic;
-  padding: 1rem 0;
+.product-form .quill-editor {
+  height: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+}
+.product-form button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.product-form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+.img-thumbnail {
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 </style>
