@@ -27,7 +27,7 @@ export default defineCachedEventHandler(
           is_new,
           discount,
           department
-        FROM product
+        FROM products
         ORDER BY id DESC
       `
       return result
